@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import { AddDialog } from './components/dialog';
+import Table from './components/table';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [list, setList] = useState([]);
+	const [openDialog, setOpenDialog] = useState(false);
+
+	const handleClick = () => {
+		setOpenDialog(true);
+	};
+
+	const handleClose = () => {
+		setOpenDialog(false);
+	};
+
+	useEffect(() => {
+		async function initUsers() {
+			try {
+				const response = await fetch('http://localhost:8000/users/');
+				const users = await response.json();
+				setList(users);
+			} catch (err) {
+				return setList([]);
+			}
+		}
+		initUsers();
+	}, []);
+
+	return (
+		<div className='text-center p-10 mx-auto'>
+			<div className='w-full'>
+				<h1 className='text-4xl pb-10'>Emails Survey</h1>
+				<div className='flex w-full justify-center'>
+					<Table list={list} setList={setList} handleDialog={handleClick} />
+				</div>
+				<AddDialog
+					open={openDialog}
+					onClose={handleClose}
+					list={list}
+					setList={setList}
+				/>
+			</div>
+		</div>
+	);
 }
 
 export default App;
