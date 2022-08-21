@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from emailcrud.serializer import UserSerializer
-from emailcrud.models import User
+from emailapp.serializer import UserSerializer
+from emailapp.models import User
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 import os
@@ -16,6 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def send(request):
+  #if request.data['recipient']
   message = Mail(
     from_email = os.environ.get('SENDER'),
     to_emails = request.data['recipient'],

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from emailcrud.models import User
+from emailapp.models import User
 
 class UserSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(required=True)
