@@ -1,0 +1,80 @@
+<html lang="en">
+	<style>
+		body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.poll {
+			display: grid;
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+			margin-bottom: 10px;
+		}
+
+		.poll div {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+	</style>
+	<body>
+		<div>
+			<h1>Hello {{ firstName }}</h1>
+			<div>
+				<p>Q1: How did you like the weather today?</p>
+				<p>Please choose one:</p>
+				<div class="poll">
+					<div>
+						<label for="1">1 = Poor</label>
+						<input type="radio" name="pollItem" id="1" />
+					</div>
+					<div class="pollItem">
+						<label for="2">2</label>
+						<input type="radio" name="pollItem" id="2" />
+					</div>
+					<div class="pollItem">
+						<label for="3">3</label>
+						<input type="radio" name="pollItem" id="3" />
+					</div>
+					<div class="pollItem">
+						<label for="4">4</label>
+						<input type="radio" name="pollItem" id="4" />
+					</div>
+					<div class="pollItem">
+						<label for="5">5 = Great</label>
+						<input type="radio" name="pollItem" id="5" />
+					</div>
+				</div>
+			</div>
+
+			<p>
+				Q2: How would you rate our customer service?; 1-5 scale; 1 = poor, 5 =
+				great
+			</p>
+			<div class="poll">
+				<div>
+					<label for="1">1 = Poor</label>
+					<input type="radio" name="pollItem" id="1" />
+				</div>
+				<div>
+					<label for="2">2</label>
+					<input type="radio" name="pollItem" id="2" />
+				</div>
+				<div>
+					<label for="3">3</label>
+					<input type="radio" name="pollItem" id="3" />
+				</div>
+				<div>
+					<label for="4">4</label>
+					<input type="radio" name="pollItem" id="4" />
+				</div>
+				<div>
+					<label for="5">5 = Great</label>
+					<input type="radio" name="pollItem" id="5" />
+				</div>
+			</div>
+			<p>Best, <br />Your Happy Customer Support</p>
+		</div>
+	</body>
+</html>
