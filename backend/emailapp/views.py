@@ -30,6 +30,10 @@ def send(request):
     print(f"Response code: {code}")
     print(f"Response headers: {headers}")
     print(f"Response body: {body}")
+    for user in request.data['ids']:
+      temp = User.objects.get(id=user)
+      temp.emails_sent += 1
+      temp.save()
     return Response({'success': 'Your email has been sent!'})
   except Exception as e:
     print("Error {0}".format(e))

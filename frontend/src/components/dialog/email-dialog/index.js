@@ -10,6 +10,10 @@ function getEmails(list) {
 	return list.map((user) => user.email);
 }
 
+function getIds(list) {
+	return list.map((user) => user.id);
+}
+
 export default function EmailDialog({ open, onClose, user }) {
 	const [content, setContent] = useState();
 	const [subject, setSubject] = useState();
@@ -18,6 +22,7 @@ export default function EmailDialog({ open, onClose, user }) {
 		var myHeaders = new Headers();
 		myHeaders.append('Content-Type', 'application/json');
 		var raw = JSON.stringify({
+			ids: getIds(user),
 			recipient: getEmails(user),
 			subject: subject,
 			content: content,
