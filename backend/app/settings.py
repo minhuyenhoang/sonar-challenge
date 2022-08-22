@@ -136,3 +136,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BROKER_URL = "redis://redis:6379"
 CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+from celery.schedules import crontab
+
+import emailapp.tasks
+
+CELERY_BEAT_SCHEDULE = {
+    "send_everyday": {
+        "task": "emailapp.tasks.send_survey_by_frequency",
+        "schedule": crontab(hour=15, minute=0),
+        "args": (1)
+    },
+    "send_every_monday": {
+        "task": "emailapp.tasks.send_survey_by_frequency",
+        "schedule": crontab(hour=15, minute=0, day_of_week=1),
+        "args": (2)
+    },
+}
