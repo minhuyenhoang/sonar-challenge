@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from emailapp.serializer import UserSerializer
@@ -16,12 +16,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def send(request):
-  #if request.data['recipient']
   message = Mail(
     from_email = os.environ.get('SENDER'),
     to_emails = request.data['recipient'],
     subject = request.data['subject'],
-    html_content = 'Hi! This is a test'
+    html_content = request.data['content'],
+    is_multiple=True
   )
   sd = SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
   try:
@@ -33,4 +33,4 @@ def send(request):
     return Response({'success': 'Your email has been sent!'})
   except Exception as e:
     print("Error {0}".format(e))
-    return Response({'error': 'Fail to send email!'})
+    return Response({'error': 'Fail to send email!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
