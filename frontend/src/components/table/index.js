@@ -4,23 +4,22 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import { useState } from 'react';
-import { EditUser } from '../../lib';
-import AddButton from './add';
-import { EditDialog } from '../dialog';
-import { getFrequency } from '../../lib';
+import { EmailDialog } from '../dialog';
+import Toolbar from './toolbar';
 
 export default function Table({ list, setList, handleDialog }) {
 	const [rowModesModel, setRowModesModel] = useState({});
 	const [open, setOpen] = useState(false);
-	const [editRow, setEditRow] = useState();
+	const [user, setUser] = useState(null);
 
-	const handleDeleteClick = (id) => () => {
+	const handleDeleteClick = (id) => async () => {
+		const response = await fetch(`http://localhost:8000/users/${id}`, {
+			method: 'DELETE',
+		});
 		setList(list.filter((row) => row.id !== id));
 	};
 
 	const handleEditClick = (id) => () => {
-		/*setEditRow(list.filter((row) => row.id === id)[0]);
-		setOpen(true);*/
 		setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
 	};
 
@@ -45,6 +44,35 @@ export default function Table({ list, setList, handleDialog }) {
 		const editedRow = list.find((row) => row.id === id);
 		if (editedRow.isNew) {
 			setList(list.filter((row) => row.id !== id));
+		}
+	};
+
+	const handleEmailClick = () => {
+		setOpen(true);
+	};
+
+	const processRowUpdate = async (newRow) => {
+		var myHeaders = new Headers();
+		myHeaders.append('Content-Type', 'application/json');
+		try {
+			var raw = JSON.stringify({
+				first_name: newRow.firstName,
+				last_name: newRow.firstName,
+				email: newRow.email,
+				frequency: newRow.frequency,
+			});
+			const response = await fetch(
+				`http://localhost:8000/users/${newRow.id}/`,
+				{
+					method: 'PATCH',
+					headers: myHeaders,
+					body: raw,
+				}
+			);
+			const user = await response.json();
+			return user;
+		} catch (err) {
+			return;
 		}
 	};
 
@@ -75,10 +103,28 @@ export default function Table({ list, setList, handleDialog }) {
 		},
 		{
 			field: 'frequency',
+			type: 'singleSelect',
 			headerName: 'Frequency',
 			width: 160,
 			editable: true,
-			valueGetter: (params) => getFrequency(params.row.frequency),
+			sortable: false,
+			valueOptions: [
+				{ label: 'Never', value: 0 },
+				{
+					label: '3PM everyday',
+					value: 1,
+				},
+				{ label: '3PM every Monday', value: 2 },
+			],
+			valueFormatter: ({ id: rowId, value, field, api }) => {
+				const colDef = api.getColumn(field);
+				const option = colDef.valueOptions.find(
+					({ value: optionValue }) => value === optionValue
+				);
+
+				return option.label;
+			},
+			//valueGetter: (params) => getFrequency(params.row.frequency),
 		},
 		{
 			field: 'action',
@@ -107,7 +153,6 @@ export default function Table({ list, setList, handleDialog }) {
 					<GridActionsCellItem
 						icon={<EditIcon />}
 						label='Edit'
-						className='textPrimary'
 						onClick={handleEditClick(id)}
 						color='inherit'
 					/>,
@@ -131,22 +176,25 @@ export default function Table({ list, setList, handleDialog }) {
 					editMode='row'
 					onRowEditStart={handleRowEditStart}
 					onRowEditStop={handleRowEditStop}
+					processRowUpdate={processRowUpdate}
+					checkboxSelection
+					onSelectionModelChange={(ids) => {
+						const selectedIDs = new Set(ids);
+						const selectedRowData = list.filter((row) =>
+							selectedIDs.has(row.id)
+						);
+						setUser(selectedRowData);
+					}}
 					experimentalFeatures={{ newEditingApi: true }}
 					components={{
-						Toolbar: AddButton,
+						Toolbar: Toolbar,
 					}}
 					componentsProps={{
-						toolbar: { handleDialog },
+						toolbar: { handleDialog, handleEmailClick },
 					}}
 				/>
 			</div>
-			{/*<EditDialog
-				open={open}
-				onClose={closeDialog}
-				list={list}
-				setList={setList}
-				data={editRow}
-        />*/}
+			{user && <EmailDialog open={open} onClose={closeDialog} user={user} />}
 		</>
 	);
 }

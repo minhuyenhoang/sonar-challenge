@@ -1,4 +1,4 @@
 import AddDialog from './add-dialog';
-import EditDialog from './edit-dialog';
+import EmailDialog from './email-dialog';
 
-export { AddDialog, EditDialog };
+export { AddDialog, EmailDialog };
